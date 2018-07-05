@@ -2,6 +2,7 @@
 
 /**
  * Esta funcion devuelve el nombre de la carta basado en su posicion en un mazo ordenado por numero y palo.
+ *
  * */
 char* obtener_nombre_de_carta(int numero_carta) {
 
