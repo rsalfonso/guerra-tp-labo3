@@ -8,7 +8,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
-#include "common_utils.h"
+#include "mensajeria.h"
 #include "server_utils.h"
 #include "cartas.h"
 

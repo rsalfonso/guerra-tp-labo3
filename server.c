@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 	sigaction(SIGINT, &interrupt, NULL);
 
 	init_server(&server_socket, &my_addr);
-	char message[MESSAGE_SIZE];
+	char message[TAMANIO_MENSAJE];
 	char* msg;
 	while (running) {
 		FD_ZERO(&fds);
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 				if (FD_ISSET(players[i].socket, &fds)) {
 					msg = message;
 					if (receive_msg(msg, players[i].socket)) {
-						int msg_code = extract_msg_code(&msg);
+						int msg_code = extraer_codigo_de_mensaje(&msg);
 						dispatcher[msg_code] (players[i].socket, &msg);
 					} else {
 						remove_player(players, i, FALSE);
@@ -183,7 +183,7 @@ void add_player(int socket) {
 	players[cl_count].played_card = -1;
 	players[cl_count].isempty = FALSE;
 	players[cl_count++].socket = socket;
-	send_int_msg(WAIT, COUNTDOWN, socket);
+	enviar_mensaje_numerico(WAIT, COUNTDOWN, socket);
 	if (cl_count == 1) {
 		//first client, set an alarm for 30 seconds
 		alarm(COUNTDOWN);
@@ -201,7 +201,7 @@ void end_game() {
 		}
 	}
 	printf("winner : %s with %d points\n", players[windex].nickname, pl_scores[windex]);
-	send_light_msg(WINNER, players[windex].socket);
+	enviar_mensaje_sin_cuerpo(WINNER, players[windex].socket);
 	clear_lobby();
 }
 
@@ -224,7 +224,7 @@ void remove_player(player* players, int index, bool sockopen) {
 }
 
 void refuse_connection(int socket) {
-	send_light_msg(REFUSE, socket);
+	enviar_mensaje_sin_cuerpo(REFUSE, socket);
 }
 
 void add_nickname(int socket, char** msg) {
@@ -255,7 +255,7 @@ void deal_cards() {
 			dealt_cards[total_dealt_cards++] = random_card;
 		}
 		//distribuer les cartes choisies au joueur
-		send_msg(DEAL, msg, players[player].socket);
+		enviar_mensaje(DEAL, msg, players[player].socket);
 		printf("cards dealt : \n");
 		printf("%s\n", msg);
 	}
@@ -271,7 +271,7 @@ void clear_lobby() {
 
 bool receive_msg(char* msg, int fd) {
 	int bytes_received;
-	if ((bytes_received = recv(fd, msg, MESSAGE_SIZE, 0)) <= 0) {
+	if ((bytes_received = recv(fd, msg, TAMANIO_MENSAJE, 0)) <= 0) {
 		if (bytes_received == 0) {
 			printf("Client disconnected.\n");
 		}
@@ -316,7 +316,7 @@ void receive_card(int socket, char** msg) {
 	static char cards[MAX_PLAYERS * 3];//:
 	int player_index = find_index(players, socket);
 	int card;
-	decode_msg_payload(msg, &card, 1);
+	decodificar_contenido_de_mensaje(msg, &card, 1);
 	players[player_index].played_card = card;
 	received_cards_count++;
 	str_length += sprintf(cards+str_length, "%d ", card);
@@ -334,7 +334,7 @@ void receive_card(int socket, char** msg) {
 			players[i].played_card = -1;
 			players[i].isempty = FALSE;
 		}
-		send_msg(GIVE, cards, players[highest_card_holder].socket);
+		enviar_mensaje(GIVE, cards, players[highest_card_holder].socket);
 		memset(cards, 0, cl_count * sizeof(int));
 		received_cards_count = 0;
 		highest_card = -1;
@@ -362,7 +362,7 @@ void end_round(int socket, char** msg) {
 void update_score(int socket, char** msg) {
 	static int count = 0;
 	int score;
-	decode_msg_payload(msg, &score, 1);
+	decodificar_contenido_de_mensaje(msg, &score, 1);
 	int i;
 	for (i = 0; i < cl_count; i++) {
 		if (players[i].socket == socket) {

@@ -21,7 +21,15 @@
 #define LONGITUD_VALOR_CARTA 2
 #define TAMANIO_DE_MAZO 52
 
+/**
+ * Esta funcion devuelve el nombre de la carta basado en su posicion en un mazo ordenado por numero y palo.
+ * */
 char* obtener_nombre_de_carta(int numero_carta);
+
+
+/**
+ * Obtiene el puntaje correspondiente a cada carta para calcular el valor de la mano de cada jugador
+ * */
 int obtener_puntos_de_carta(int numero_carta);
 
 #endif

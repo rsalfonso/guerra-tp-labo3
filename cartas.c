@@ -1,9 +1,5 @@
 #include "cartas.h"
 
-/**
- * Esta funcion devuelve el nombre de la carta basado en su posicion en un mazo ordenado por numero y palo.
- *
- * */
 char* obtener_nombre_de_carta(int numero_carta) {
 
 	char palo[LONGITUD_CODIGO_PALO];
@@ -74,7 +70,6 @@ char* obtener_nombre_de_carta(int numero_carta) {
 
 	return carta;
 }
-
 
 int obtener_puntos_de_carta(int numero_carta) {
 	if (numero_carta > 47) {

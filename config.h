@@ -47,7 +47,7 @@ typedef int bool;
 
 #define MAX_PLAYERS 4
 #define NAMESIZE 20
-#define MESSAGE_SIZE 82
+#define TAMANIO_MENSAJE 82
 
 //shared-memory keys
 #define NICKNAMES_KEY "nicknames"

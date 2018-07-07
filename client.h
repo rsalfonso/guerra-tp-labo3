@@ -14,7 +14,7 @@
 #include <time.h>
 #include <signal.h>
 #include "config.h"
-#include "common_utils.h"
+#include "mensajeria.h"
 #include "cartas.h"
 
 #define PORT PORT_DIMOV

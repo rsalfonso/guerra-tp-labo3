@@ -1,22 +1,5 @@
-/*
- * =====================================================================================
- *
- *       Filename:  server_utils.h
- *
- *    Description:	Utilitary functions used by the server program
- *
- *        Version:  1.0
- *        Created:  2016-05-17 15:24:55
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  DIMOV Theodor, DRAGOMIR Philippe
- *   Organization:
- *
- * =====================================================================================
- */
 #include "config.h"
-#include "common_utils.h"
+#include "mensajeria.h"
 
 typedef struct player {
 	int socket;

@@ -26,7 +26,7 @@ int cards_in_stash;
 void disconnect(bool should_inform) {
 	printf("Okay, okay..\n");
 	if (should_inform) {
-		send_light_msg(DISCONNECT, client_socket);
+		enviar_mensaje_sin_cuerpo(DISCONNECT, client_socket);
 		close(client_socket);
 	}
 	exit(EXIT_SUCCESS);
@@ -87,19 +87,19 @@ int calculate_score() {
 }
 
 void receive_message(int client_socket,char** name) {
-	char msgFromServer[MESSAGE_SIZE];
+	char msgFromServer[TAMANIO_MENSAJE];
 	char* msg = msgFromServer;
 
 	int bytesReceived;
-	if ((bytesReceived=recv(client_socket,msgFromServer,MESSAGE_SIZE,0))==-1) {
+	if ((bytesReceived=recv(client_socket,msgFromServer,TAMANIO_MENSAJE,0))==-1) {
 		perror("Receive");
 		exit(EXIT_FAILURE);
 	}
 	msgFromServer[bytesReceived]='\0';
 	fflush(stdout);
-	int msg_code = extract_msg_code(&msg);
+	int msg_code = extraer_codigo_de_mensaje(&msg);
 	if(msg_code == WAIT) {
-		send_msg(NICKNAME, *name, client_socket);
+		enviar_mensaje(NICKNAME, *name, client_socket);
 	} else if(msg_code == REFUSE) {
 		printf("Connection refused by the server. Please try again later.\n");
 		close(client_socket);
@@ -112,12 +112,12 @@ void receive_message(int client_socket,char** name) {
 	} else if(msg_code == ROUND) {
 		printf("The current round is over.\n");
 		int score = calculate_score();
-		send_int_msg(SCORE, score, client_socket);
+		enviar_mensaje_numerico(SCORE, score, client_socket);
 		printf("Your score : %d .. \n", score);
 	} else if(msg_code == DEAL) {
 		clear_cards();
 		printf("Round begins. ");
-		cards_in_hand = decode_msg_payload(&msg, hand, TAMANIO_DE_MAZO / 2);
+		cards_in_hand = decodificar_contenido_de_mensaje(&msg, hand, TAMANIO_DE_MAZO / 2);
 		printf("These are your cards : \n");
 	} else if(msg_code == ASK) {
 		print_cards();
@@ -125,7 +125,7 @@ void receive_message(int client_socket,char** name) {
 		if (cards_in_hand + cards_in_stash == 1) {
 			printf("You are playing your last card\n");
 			//the player is about to play his last card, the round is over
-			send_light_msg(EMPTY, client_socket);
+			enviar_mensaje_sin_cuerpo(EMPTY, client_socket);
 		}
 		if (cards_in_hand == 0) {
 			//the player hasn't got any cards in his hand, his stash becomes his hand
@@ -146,7 +146,7 @@ void receive_message(int client_socket,char** name) {
 			}
 			times++;
 		} while(choice < 0 || choice > cards_in_hand);
-		send_int_msg(PLAY, hand[choice], client_socket);
+		enviar_mensaje_numerico(PLAY, hand[choice], client_socket);
 		int i;
 		for (i = choice; i < cards_in_hand-1; i++) {
 			hand[i] = hand[i+1];
@@ -157,7 +157,7 @@ void receive_message(int client_socket,char** name) {
 		printf("\n");
 	} else if (msg_code == GIVE){
 		int* stash_ptr = stash + cards_in_stash;
-		int size = decode_msg_payload(&msg, stash_ptr, MAX_PLAYERS);
+		int size = decodificar_contenido_de_mensaje(&msg, stash_ptr, MAX_PLAYERS);
 		cards_in_stash += size;
 		print_cards();
 		printf("You win the turn!\n");
