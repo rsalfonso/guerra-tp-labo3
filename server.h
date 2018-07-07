@@ -13,7 +13,7 @@
 #include "cartas.h"
 
 #define MIN_PLAYERS 2
-#define PORT PORT_DIMOV
+#define PORT PUERTO_SERVIDOR
 #define BUFFER_SIZE 1024
 #define BACKLOG 5
 #define COUNTDOWN 10 //30 seconds wait time

@@ -2,8 +2,8 @@
 
 //j'ai commencé à épurer le code, mais malheureusement je n'ai pas eu assez de temps pour réduire le nombre de variables globales utilisé
 int cl_count;
-int pl_scores[MAX_PLAYERS]; //manque de temps pour shm
-player players[MAX_PLAYERS];
+int pl_scores[CANTIDAD_MAXIMA_DE_JUGADORES]; //manque de temps pour shm
+player players[CANTIDAD_MAXIMA_DE_JUGADORES];
 bool game_in_progress;
 bool time_is_up; //
 bool running; //server is running
@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 
 	srand(time(NULL));
 
-	for (i = 0; i < MAX_PLAYERS; i++) {
+	for (i = 0; i < CANTIDAD_MAXIMA_DE_JUGADORES; i++) {
 		players[i].socket = 0;
 	}
 
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 		FD_SET(server_socket, &fds);
 		max_fd = server_socket + 1;
 		int i;
-		for (i = 0; i < MAX_PLAYERS; i++) {
+		for (i = 0; i < CANTIDAD_MAXIMA_DE_JUGADORES; i++) {
 			if (players[i].socket > 0) {
 				FD_SET(players[i].socket, &fds);
 			}
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 				//the current turn is over and none of the players have signaled that they're out of cards
 				end_of_turn = FALSE;
 				//prompt players to play a card
-				broadcast_light(ASK, players, cl_count);
+				broadcast_light(JUEGUE, players, cl_count);
 			}
 			if (end_of_round) {
 				//current round is over
@@ -123,7 +123,7 @@ void alarm_handler(int signum) {
 
 int find_index(player* players, int socket) {
 	int i;
-	for (i = 0; i < MAX_PLAYERS; i++) {
+	for (i = 0; i < CANTIDAD_MAXIMA_DE_JUGADORES; i++) {
 		if (players[i].socket == socket) {
 			return i;
 		}
@@ -171,7 +171,7 @@ void add_client(int server_socket, struct sockaddr_in *cl_addr) {
 	} else {
 		//either accept or refuse the connection
 		//players, cl_count
-		if (game_in_progress || cl_count == MAX_PLAYERS) {
+		if (game_in_progress || cl_count == CANTIDAD_MAXIMA_DE_JUGADORES) {
 			refuse_connection(new_cl_socket);
 		} else {
 			add_player(new_cl_socket);
@@ -183,7 +183,7 @@ void add_player(int socket) {
 	players[cl_count].played_card = -1;
 	players[cl_count].isempty = FALSE;
 	players[cl_count++].socket = socket;
-	enviar_mensaje_numerico(WAIT, COUNTDOWN, socket);
+	enviar_mensaje_numerico(ESPERANDO_JUGADORES, COUNTDOWN, socket);
 	if (cl_count == 1) {
 		//first client, set an alarm for 30 seconds
 		alarm(COUNTDOWN);
@@ -201,7 +201,7 @@ void end_game() {
 		}
 	}
 	printf("winner : %s with %d points\n", players[windex].nickname, pl_scores[windex]);
-	enviar_mensaje_sin_cuerpo(WINNER, players[windex].socket);
+	enviar_mensaje_sin_cuerpo(GANADOR, players[windex].socket);
 	clear_lobby();
 }
 
@@ -209,7 +209,7 @@ void remove_player(player* players, int index, bool sockopen) {
 	if (sockopen) {
 		shutdown_socket(players[index].socket);
 	}
-	memcpy(players[index].nickname, "\0", NAMESIZE);
+	memcpy(players[index].nickname, "\0", TAMANIO_DE_NOMBRE);
 	players[index].socket = 0;
 	pl_scores[index] = 0;
 	cl_count--;
@@ -224,11 +224,11 @@ void remove_player(player* players, int index, bool sockopen) {
 }
 
 void refuse_connection(int socket) {
-	enviar_mensaje_sin_cuerpo(REFUSE, socket);
+	enviar_mensaje_sin_cuerpo(CONEXION_RECHAZADA, socket);
 }
 
 void add_nickname(int socket, char** msg) {
-	char nickname[NAMESIZE];
+	char nickname[TAMANIO_DE_NOMBRE];
 	extract_player_nickname(msg, nickname);
 	int index = find_index(players, socket);
 	sprintf(players[index].nickname, "%s", nickname);
@@ -255,14 +255,14 @@ void deal_cards() {
 			dealt_cards[total_dealt_cards++] = random_card;
 		}
 		//distribuer les cartes choisies au joueur
-		enviar_mensaje(DEAL, msg, players[player].socket);
+		enviar_mensaje(NUEVA_MANO, msg, players[player].socket);
 		printf("cards dealt : \n");
 		printf("%s\n", msg);
 	}
 }
 
 void clear_lobby() {
-	broadcast_light(DISCONNECT, players, cl_count);
+	broadcast_light(DESCONEXION, players, cl_count);
 	game_in_progress = FALSE;
 	while (players[0].socket > 0) {
 			remove_player(players, 0, FALSE);
@@ -313,7 +313,7 @@ void shutdown_server() {
 void receive_card(int socket, char** msg) {
 	static int received_cards_count = 0;
 	static int str_length = 0;
-	static char cards[MAX_PLAYERS * 3];//:
+	static char cards[CANTIDAD_MAXIMA_DE_JUGADORES * 3];//:
 	int player_index = find_index(players, socket);
 	int card;
 	decodificar_contenido_de_mensaje(msg, &card, 1);
@@ -334,7 +334,7 @@ void receive_card(int socket, char** msg) {
 			players[i].played_card = -1;
 			players[i].isempty = FALSE;
 		}
-		enviar_mensaje(GIVE, cards, players[highest_card_holder].socket);
+		enviar_mensaje(CARTAS_GANADAS, cards, players[highest_card_holder].socket);
 		memset(cards, 0, cl_count * sizeof(int));
 		received_cards_count = 0;
 		highest_card = -1;
@@ -345,7 +345,7 @@ void receive_card(int socket, char** msg) {
 			sigempty = FALSE;
 		}
 		if (sigempty) {
-			broadcast_light(ROUND, players, cl_count);
+			broadcast_light(RONDA_TERMINADA, players, cl_count);
 		}
 	}
 }

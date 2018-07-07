@@ -13,11 +13,11 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <signal.h>
-#include "config.h"
+#include "configuracion.h"
 #include "mensajeria.h"
 #include "cartas.h"
 
-#define PORT PORT_DIMOV
+#define PORT PUERTO_SERVIDOR
 #endif
 
 void interrupt_handler(int);

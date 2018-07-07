@@ -1,9 +1,9 @@
-#include "config.h"
+#include "configuracion.h"
 #include "mensajeria.h"
 
 typedef struct player {
 	int socket;
-	char nickname[NAMESIZE];
+	char nickname[TAMANIO_DE_NOMBRE];
 	int played_card;
 	bool isempty;
 } player;

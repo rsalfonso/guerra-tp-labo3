@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include "config.h"
+#include "configuracion.h"
 
 #define TAMANIO_MENSAJE 82 //the maximum size a message could ever have
 

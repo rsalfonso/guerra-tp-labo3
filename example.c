@@ -38,16 +38,16 @@ void receive_msg(int i, int socket, char** nickname) {
 	}
 	msg[bytes_received]='\0';
 	int msg_code = extraer_codigo_de_mensaje(&msg_ptr); //renvoie le code et déplace le pointeur
-	if (msg_code == WAIT) {
-		printf("received a connection confirmation WAIT\n");
+	if (msg_code == ESPERANDO_JUGADORES) {
+		printf("received a connection confirmation ESPERANDO_JUGADORES\n");
 		printf("my nickname : %s\n", *nickname);
-		enviar_mensaje(NICKNAME, *nickname, socket);
-	} else if (msg_code == REFUSE || msg_code == DISCONNECT) {
-		printf("received a connection refusal REFUSE\n");
+		enviar_mensaje(APODO, *nickname, socket);
+	} else if (msg_code == CONEXION_RECHAZADA || msg_code == DESCONEXION) {
+		printf("received a connection refusal CONEXION_RECHAZADA\n");
 		close(socket);
-	} else if (msg_code == ROUND) {
+	} else if (msg_code == RONDA_TERMINADA) {
 		printf("new round\n");
-	} else if (msg_code == DEAL) {
+	} else if (msg_code == NUEVA_MANO) {
 		cards_in_hand = decodificar_contenido_de_mensaje(&msg_ptr, hand, DECK_SIZE); //remplit la liste de cartes et renvoie le nombre de cartes reçues
 	} // ...
 }
