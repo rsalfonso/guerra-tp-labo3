@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 	fd_set fds;
 
 	if (argc != 2) {
-		fprintf(stderr, "Gimme args! [maximum number of rounds]\n");
+		fprintf(stderr, "Debe introducir el maximo numero de rounds\n");
 		return EXIT_FAILURE;
 	}
 	max_rounds = atoi(argv[1]);
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
 				if (round_nb == max_rounds) {
 					end_game();
 					round_nb = 0;
-					printf("game over\n");
+					printf("Fin del juego\n");
 				} else {
 					start_round();
 				}
@@ -192,7 +192,7 @@ void add_player(int socket) {
 
 
 void end_game() {
-	printf("player count : %d\n", cl_count);
+	printf("Total de jugadores : %d\n", cl_count);
 	int i, windex, highscore = 0;
 	for (i = 0; i < cl_count; i++) {
 		if (pl_scores[i] >= highscore) {
@@ -200,7 +200,7 @@ void end_game() {
 			windex = i;
 		}
 	}
-	printf("winner : %s with %d points\n", players[windex].nickname, pl_scores[windex]);
+	printf("Ganador : %s con %d puntos\n", players[windex].nickname, pl_scores[windex]);
 	enviar_mensaje_sin_cuerpo(GANADOR, players[windex].socket);
 	clear_lobby();
 }
@@ -256,7 +256,7 @@ void deal_cards() {
 		}
 		//distribuer les cartes choisies au joueur
 		enviar_mensaje(NUEVA_MANO, msg, players[player].socket);
-		printf("cards dealt : \n");
+		printf("Cartas repartidas : \n");
 		printf("%s\n", msg);
 	}
 }
@@ -296,7 +296,7 @@ void start_round() {
 }
 
 void shutdown_socket(int socket) {
-	printf("Shutting down socket number %d\n", socket);
+	printf("Apagando socket numero %d\n", socket);
 	if (close(socket) < 0) {
 		perror("Socket shutdown");
 		exit(EXIT_FAILURE);
@@ -304,7 +304,7 @@ void shutdown_socket(int socket) {
 }
 
 void shutdown_server() {
-	printf("server shutting down ..\n");
+	printf("Apagando servidor ..\n");
 	clear_lobby();
 	running = FALSE;
 	//free shared memory (allocate some first)
@@ -341,7 +341,7 @@ void receive_card(int socket, char** msg) {
 		str_length = 0;
 		end_of_turn = TRUE;
 		if (empty_count == 1 && empty_index == highest_card_holder) { //the only player who's out of cards wins the turn, round is still on
-			printf("saved by the bell!\n");
+			printf("Salvado por la campana!\n");
 			sigempty = FALSE;
 		}
 		if (sigempty) {
@@ -352,11 +352,11 @@ void receive_card(int socket, char** msg) {
 
 void end_round(int socket, char** msg) {
 	if (!sigempty) {
-		printf("end of round !\n");
+		printf("Fin del round !\n");
 		sigempty = TRUE;
 	}
 	players[find_index(players, socket)].isempty = TRUE;
-	printf("msg : %s\n", *msg);
+	printf("Mensaje : %s\n", *msg);
 }
 
 void update_score(int socket, char** msg) {
@@ -376,11 +376,11 @@ void update_score(int socket, char** msg) {
 		int i;
 		for (i = 0; i < cl_count; i++) {
 			if (players[i].socket > 0) {
-				printf("%s : %d points\n", players[i].nickname, pl_scores[i]);
+				printf("%s : %d puntos\n", players[i].nickname, pl_scores[i]);
 			}
 		}
 		char buffer[10];
-		printf("press any key to play next round\n");
+		printf("Presione cualquier tecla para jugar la siguiente ronda\n");
 		fgets(buffer, 10, stdin);
 	}
 }
