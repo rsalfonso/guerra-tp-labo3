@@ -7,7 +7,7 @@ int cards_in_hand;
 int cards_in_stash;
 
 void disconnect(bool should_inform) {
-	printf("Okay, okay..\n");
+	printf("Hasta luego..\n");
 	if (should_inform) {
 		enviar_mensaje_sin_cuerpo(DESCONEXION, client_socket);
 		close(client_socket);
@@ -37,7 +37,7 @@ void clear_cards() {
 
 void print_cards() {
 	int i;
-	printf("current hand : ");
+	printf("mano actual : ");
 	for (i = 0; i < cards_in_hand; i++) {
 		printf("%d: %-8s ", i, obtener_nombre_de_carta(hand[i]));
 		if(i+1 < cards_in_hand) {
@@ -45,7 +45,7 @@ void print_cards() {
 		}
 	}
 	printf("\n");
-	printf("current stash : ");
+	printf("cartas en la pila : ");
 	for (i = 0; i < cards_in_stash; i++) {
 		printf("%d: %-8s ", i, obtener_nombre_de_carta(stash[i]));
 		if(i+1 < cards_in_stash ){
@@ -56,7 +56,7 @@ void print_cards() {
 }
 
 int calculate_score() {
-	printf("CALCULATING PUNTAJE!\n");
+	printf("CALCULANDO PUNTAJE!\n");
 	print_cards();
 	int score = 0;
 	int i;
@@ -84,45 +84,45 @@ void receive_message(int client_socket,char** name) {
 	if(msg_code == ESPERANDO_JUGADORES) {
 		enviar_mensaje(APODO, *name, client_socket);
 	} else if(msg_code == CONEXION_RECHAZADA) {
-		printf("Connection refused by the server. Please try again later.\n");
+		printf("Conexion rechazada por el servidor. Por favor intentelo mas tarde.\n");
 		close(client_socket);
 		exit(-1);
 	} else if(msg_code == DESCONEXION) {
-		printf("Disconnected by the server.\n");
-		printf("Game over!\n\n");
+		printf("Desconectado por el servidor.\n");
+		printf("Fin del juego!\n\n");
 		close(client_socket);
 		exit(-1);
 	} else if(msg_code == RONDA_TERMINADA) {
-		printf("The current round is over.\n");
+		printf("La ronda actual termino.\n");
 		int score = calculate_score();
 		enviar_mensaje_numerico(PUNTAJE, score, client_socket);
-		printf("Your score : %d .. \n", score);
+		printf("Su puntaje : %d .. \n", score);
 	} else if(msg_code == NUEVA_MANO) {
 		clear_cards();
-		printf("Round begins. ");
+		printf("Comenzando la ronda. ");
 		cards_in_hand = decodificar_contenido_de_mensaje(&msg, hand, TAMANIO_DE_MAZO / 2);
-		printf("These are your cards : \n");
+		printf("Estas son sus cartas : \n");
 	} else if(msg_code == JUEGUE) {
 		print_cards();
 		int choice = -1;
 		if (cards_in_hand + cards_in_stash == 1) {
-			printf("You are playing your last card\n");
-			//the jugador is about to play his last card, the round is over
+			printf("Usted esta jugando su ultima carta\n");
+			//the player is about to play his last card, the round is over
 			enviar_mensaje_sin_cuerpo(ULTIMA_CARTA, client_socket);
 		}
 		if (cards_in_hand == 0) {
 			//the jugador hasn't got any cards in his hand, his stash becomes his hand
 			refill();
-			printf("Out of cards, hand replenished from stash\n");
+			printf("Sin cartas, tomando cartas de la pila\n");
 			print_cards();
 		}
 		int times = 0;
 		do {
 			if(times > 0) {
-				printf("You are kindly requested to play one of your own cards\n");
+				printf("Por favor, juegue una de sus cartas.\n");
 				print_cards();
 			}
-			printf("Which card would you like to play ?\n");
+			printf("Que carta le gustaria jugar ?\n");
 			if (scanf("%d", &choice) == EOF) {
 				//Ctr+D
 				disconnect(FALSE);
@@ -135,7 +135,7 @@ void receive_message(int client_socket,char** name) {
 			hand[i] = hand[i+1];
 		}
 		cards_in_hand--;
-		printf("Your new hand is: ");
+		printf("Su nueva mano es: ");
 		print_cards();
 		printf("\n");
 	} else if (msg_code == CARTAS_GANADAS){
@@ -143,16 +143,16 @@ void receive_message(int client_socket,char** name) {
 		int size = decodificar_contenido_de_mensaje(&msg, stash_ptr, CANTIDAD_MAXIMA_DE_JUGADORES);
 		cards_in_stash += size;
 		print_cards();
-		printf("You win the turn!\n");
+		printf("Ha ganado el turno!\n");
 	} else if (msg_code == GANADOR) {
-		printf("Congratulations, you win the game!\n");
+		printf("Felicidades, ha ganado el juego!\n");
 	} else {
-		printf("Message not support yet !");
+		printf("Mensaje no soportado !");
 	}
 }
 
 void create_nickname(char* name) {
-	char* request="Enter your apodo (20 characters max): ";
+	char* request="Ingrese su nombre: ";
 	printf("%s", request);
 	scanf("%s", name);
 	fflush(stdin);
@@ -188,7 +188,7 @@ bool fdp_is_valid(int fdp) {
 int main(int argc, char *argv[]) {
 
 	if (argc != 2) {
-		fprintf(stderr, "You need to specify the server's ip address\n");
+		fprintf(stderr, "Debe ingresar la direccion IP del servidor.\n");
 		return EXIT_FAILURE;
 	}
 	struct sockaddr_in server_address;// adresse du server
