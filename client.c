@@ -1,20 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  client.c
- *
- *    Description:  Fichier gérant le client du projet
- *
- *        Version:  1.0
- *        Created:  05/04/2016 03:54:34 PM
- *       Revision:  1
- *       Compiler:  gcc
- *
- *         Author:  DIMOV Theodor, DRAGOMIR Philippe
- *   Organization:  IPL-Student
- *
- * =====================================================================================
- */
 #include "client.h"
 
 int client_socket;
@@ -124,11 +107,11 @@ void receive_message(int client_socket,char** name) {
 		int choice = -1;
 		if (cards_in_hand + cards_in_stash == 1) {
 			printf("You are playing your last card\n");
-			//the player is about to play his last card, the round is over
+			//the jugador is about to play his last card, the round is over
 			enviar_mensaje_sin_cuerpo(ULTIMA_CARTA, client_socket);
 		}
 		if (cards_in_hand == 0) {
-			//the player hasn't got any cards in his hand, his stash becomes his hand
+			//the jugador hasn't got any cards in his hand, his stash becomes his hand
 			refill();
 			printf("Out of cards, hand replenished from stash\n");
 			print_cards();
@@ -169,7 +152,7 @@ void receive_message(int client_socket,char** name) {
 }
 
 void create_nickname(char* name) {
-	char* request="Enter your nickname (20 characters max): ";
+	char* request="Enter your apodo (20 characters max): ";
 	printf("%s", request);
 	scanf("%s", name);
 	fflush(stdin);

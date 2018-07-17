@@ -1,5 +1,5 @@
 #!/bin/bash
 
 rm *.o
-rm server
+rm servidor
 rm client

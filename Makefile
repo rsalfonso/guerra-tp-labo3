@@ -1,18 +1,18 @@
-TARGET= server client
+TARGET= servidor client
 
 CC=gcc
 CFLAGS=-Wall -Wextra
 
 normal: $(TARGET)
 
-server: server.o mensajeria.o server_utils.o cartas.o
-	$(CC) $(CFLAGS) server.o mensajeria.o server_utils.o cartas.o -o server
+servidor: servidor.o mensajeria.o utilidades.o cartas.o
+	$(CC) $(CFLAGS) servidor.o mensajeria.o utilidades.o cartas.o -o servidor
 
 client: client.o mensajeria.o cartas.o
 	$(CC) $(CFLAGS) client.o mensajeria.o cartas.o -o client
 
-server.o: server.c mensajeria.h server_utils.h cartas.h
-	$(CC) $(CFLAGS) -c server.c
+servidor.o: servidor.c mensajeria.h utilidades.h cartas.h
+	$(CC) $(CFLAGS) -c servidor.c
 
 client.o: client.c mensajeria.h cartas.h
 	$(CC) $(CFLAGS) -c client.c
@@ -20,8 +20,8 @@ client.o: client.c mensajeria.h cartas.h
 mensajeria.o:	mensajeria.h mensajeria.c
 	$(CC) $(CFLAGS) -c mensajeria.c
 
-server_utils.o: server_utils.h server_utils.c
-	$(CC) $(CFLAGS) -c server_utils.c
+utilidades.o: utilidades.h utilidades.c
+	$(CC) $(CFLAGS) -c utilidades.c
 
 cartas.o: cartas.h cartas.c
 	$(CC) $(CFLAGS) -c cartas.c
