@@ -21,12 +21,12 @@
 #endif
 
 void interrupt_handler(int);
-void disconnect(bool);
-void refill();
-void clear_cards();
-void print_cards();
-int calculate_score();
-void receive_message(int clientSocket,char** name);
-void createNickname(char *name);
-void connectToServer(int *clientSocket,char* serverIP,struct hostent *he,struct sockaddr_in *serverAddress);
-bool fdp_is_valid(int fdp);
+void desconectar(bool);
+void reponer();
+void limpiar_cartas();
+void imprimir_cartas();
+int calcular_puntaje();
+void recibir_mensaje(int clientSocket,char** name);
+void crear_sobrenombre(char *name);
+void conectar_con_servidor(int *clientSocket,char* serverIP,struct hostent *he,struct sockaddr_in *serverAddress);
+bool validar_fdp(int fdp);
