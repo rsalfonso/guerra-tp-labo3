@@ -1,4 +1,4 @@
-#define _XOPEN_SOURCE
+#define _XOPEN_SOURCE //para sacar un warning feo
 
 #include "servidor.h" 
 

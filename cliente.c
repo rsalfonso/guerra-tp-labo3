@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE //para sacar un warning feo
+
 #include "cliente.h"
 
 int socket_cliente;

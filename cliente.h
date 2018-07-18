@@ -18,6 +18,8 @@
 #include "cartas.h"
 
 #define PORT PUERTO_SERVIDOR
+#define h_addr h_addr_list[0] /* para evitar un warning feo */
+
 #endif
 
 void interrupt_handler(int);
