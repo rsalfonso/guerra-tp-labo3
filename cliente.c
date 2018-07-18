@@ -9,7 +9,7 @@ int cartas_en_mano;
 int cartas_en_pila;
 
 void desconectar(bool debe_informar) {
-	printf("Hasta luego..\n");
+	printf("Hasta luego...\n");
 	if (debe_informar) {
 		enviar_mensaje_sin_cuerpo(DESCONEXION, socket_cliente);
 		close(socket_cliente);
@@ -39,7 +39,7 @@ void limpiar_cartas() {
 
 void imprimir_cartas() {
 	int i;
-	printf("mano actual : ");
+	printf("-Mano actual: ");
 	for (i = 0; i < cartas_en_mano; i++) {
 		printf("%d: %-8s ", i, obtener_nombre_de_carta(mano[i]));
 		if (i+1 < cartas_en_mano) {
@@ -47,7 +47,7 @@ void imprimir_cartas() {
 		}
 	}
 	printf("\n");
-	printf("cartas en la pila : ");
+	printf("-Cartas en la pila: ");
 	for (i = 0; i < cartas_en_pila; i++) {
 		printf("%d: %-8s ", i, obtener_nombre_de_carta(pila[i]));
 		if (i+1 < cartas_en_pila ){
@@ -98,37 +98,37 @@ void recibir_mensaje(int socket_cliente,char** nombre) {
 		close(socket_cliente);
 		exit(-1);
 	} else if (codigo_de_mensaje == RONDA_TERMINADA) {
-		printf("La ronda actual termino.\n");
+		printf("\n***La ronda actual termino***\n");
 		int puntaje = calcular_puntaje();
 		enviar_mensaje_numerico(PUNTAJE, puntaje, socket_cliente);
 		printf("Su puntaje : %d .. \n", puntaje);
 	} else if (codigo_de_mensaje == NUEVA_MANO) {
 		limpiar_cartas();
-		printf("Comenzando la ronda. ");
+		printf("\n***Comenzando la ronda***\n");
 		cartas_en_mano = decodificar_contenido_de_mensaje(&mensaje, mano, TAMANIO_DE_MAZO / 2);
 		printf("Estas son sus cartas : \n");
 	} else if (codigo_de_mensaje == JUEGUE) {
 		imprimir_cartas();
 		int eleccion = -1;
 		if (cartas_en_mano + cartas_en_pila == 1) {
-			printf("Usted esta jugando su ultima carta\n");
+			printf("Usted esta jugando su ultima carta.\n");
 			//El jugador esta a punto de jugar su ultima carta, la ronda esta terminada
 			enviar_mensaje_sin_cuerpo(ULTIMA_CARTA, socket_cliente);
 		}
 		if (cartas_en_mano == 0) {
 			//El jugador no tiene ninguna carta en la mano, la pila se convierte en su mano.
 			reponer();
-			printf("Sin cartas, tomando cartas de la pila\n");
+			printf("\n***Sin cartas, tomando cartas de la pila***\n");
 			imprimir_cartas();
 		}
 
 		int intentos = 0;
 		do {
 			if (intentos > 0) {
-				printf("Por favor, juegue una de sus cartas.\n");
+				printf("\n***Por favor, juegue una de sus cartas.***\n");
 				imprimir_cartas();
 			}
-			printf("Que carta le gustaria jugar ?\n");
+			printf("Que carta le gustaria jugar?\n");
 			if (scanf("%d", &eleccion) == EOF) {
 				//Ctr+D
 				desconectar(FALSE);
@@ -144,19 +144,16 @@ void recibir_mensaje(int socket_cliente,char** nombre) {
 		}
 		
 		cartas_en_mano--;
-		printf("Su nueva mano es: ");
-		imprimir_cartas();
-		printf("\n");
 	} else if (codigo_de_mensaje == CARTAS_GANADAS){
 		int* puntero_pila = pila + cartas_en_pila;
 		int size = decodificar_contenido_de_mensaje(&mensaje, puntero_pila, CANTIDAD_MAXIMA_DE_JUGADORES);
 		cartas_en_pila += size;
 		imprimir_cartas();
-		printf("Ha ganado el turno!\n");
+		printf("\n***Ha ganado el turno!***\n");
 	} else if (codigo_de_mensaje == GANADOR) {
-		printf("Felicidades, ha ganado el juego!\n");
+		printf("\n\n***Felicidades, ha ganado el juego!***\n\n");
 	} else {
-		printf("Mensaje no soportado !");
+		printf("ERROR: Mensaje no soportado !");
 	}
 }
 
