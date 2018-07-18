@@ -53,5 +53,5 @@ dkms.conf
 
 #Sarasa
 .vscode/
-client
-server
+cliente
+servidor

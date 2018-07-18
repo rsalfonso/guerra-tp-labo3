@@ -2,4 +2,4 @@
 
 rm *.o
 rm servidor
-rm client
+rm cliente
